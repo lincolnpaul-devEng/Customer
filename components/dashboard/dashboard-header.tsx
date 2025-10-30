@@ -1,11 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Menu, Bell } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Moon, Sun } from "lucide-react"
 import { useEffect, useState } from "react"
+import { UserProfileDropdown } from "@/components/ui/user-profile-dropdown"
 
 export function DashboardHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const { theme, setTheme } = useTheme()
@@ -34,9 +34,7 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick: () => void }) {
           {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </Button>
 
-        <Avatar>
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
+        <UserProfileDropdown />
       </div>
     </header>
   )

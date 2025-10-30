@@ -4,11 +4,26 @@ import { Button } from "@/components/ui/button"
 import { CastovaLogo } from "@/components/castova-logo"
 import { ArrowRight } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { VideoModal } from "@/components/ui/video-modal"
+import Link from "next/link"
 
 export function HeroSection() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [data, setData] = useState(null)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/data")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok")
+        }
+        return response.json()
+      })
+      .then((data) => setData(data))
+      .catch((error) => setError(error.message))
+  }, [])
 
   return (
     <section className="relative overflow-hidden py-20 md:py-40 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-card">
@@ -28,13 +43,14 @@ export function HeroSection() {
               className="text-lg md:text-xl text-foreground/70 mb-8 max-w-xl animate-fade-in-up"
               style={{ animationDelay: "0.2s" }}
             >
-              Castova is the modern platform for capturing, managing, and converting leads. Built for teams that value
-              simplicity and results.
+              {error ? `Error: ${error}` : data ? JSON.stringify(data) : "Castova is the modern platform for capturing, managing, and converting leads. Built for teams that value simplicity and results."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-              <Button size="lg" className="gap-2">
-                Get Started Free <ArrowRight className="w-4 h-4" />
-              </Button>
+              <Link href="/payment">
+                <Button size="lg" className="gap-2">
+                  Get Started Free <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
               <Button size="lg" variant="outline" onClick={() => setIsModalOpen(true)}>
                 Watch Demo
               </Button>

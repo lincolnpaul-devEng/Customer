@@ -1,10 +1,13 @@
 "use client"
 import { BadgeCheck, ArrowRight } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { ContactUsModal } from "@/components/ui/contact-us-modal"
 
 export interface PricingTier {
   name: string
@@ -22,6 +25,7 @@ interface PricingCardProps {
 }
 
 export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false)
   const price = tier.price[paymentFrequency]
   const isHighlighted = tier.highlighted
   const isPopular = tier.popular
@@ -37,59 +41,75 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
   }
 
   return (
-    <Card
-      className={cn(
-        "relative flex flex-col gap-8 overflow-hidden p-6",
-        isHighlighted ? "bg-foreground text-background" : "bg-background text-foreground",
-        isPopular && "ring-2 ring-primary",
-      )}
-    >
-      {isHighlighted && <HighlightedBackground />}
-      {isPopular && <PopularBackground />}
-
-      <h2 className="flex items-center gap-3 text-xl font-medium capitalize">
-        {tier.name}
-        {isPopular && (
-          <Badge variant="secondary" className="mt-1 z-10">
-            🔥 Most Popular
-          </Badge>
+    <>
+      <Card
+        className={cn(
+          "relative flex flex-col gap-8 overflow-hidden p-6",
+          isHighlighted ? "bg-foreground text-background" : "bg-background text-foreground",
+          isPopular && "ring-2 ring-primary",
         )}
-      </h2>
+      >
+        {isHighlighted && <HighlightedBackground />}
+        {isPopular && <PopularBackground />}
 
-      <div className="relative h-12">
-        {typeof price === "number" ? (
-          <>
-            <p className="text-4xl font-medium">{formatPrice(price)}</p>
-            <p className="-mt-2 text-xs text-muted-foreground">Per month/user</p>
-          </>
+        <h2 className="flex items-center gap-3 text-xl font-medium capitalize">
+          {tier.name}
+          {isPopular && (
+            <Badge variant="secondary" className="mt-1 z-10">
+              🔥 Most Popular
+            </Badge>
+          )}
+        </h2>
+
+        <div className="relative h-12">
+          {typeof price === "number" ? (
+            <>
+              <p className="text-4xl font-medium">{formatPrice(price)}</p>
+              <p className="-mt-2 text-xs text-muted-foreground">Per month/user</p>
+            </>
+          ) : (
+            <h1 className="text-4xl font-medium">{price}</h1>
+          )}
+        </div>
+
+        <div className="flex-1 space-y-2">
+          <h3 className="text-sm font-medium">{tier.description}</h3>
+          <ul className="space-y-2">
+            {tier.features.map((feature, index) => (
+              <li
+                key={index}
+                className={cn(
+                  "flex items-center gap-2 text-sm font-medium",
+                  isHighlighted ? "text-background" : "text-muted-foreground",
+                )}
+              >
+                <BadgeCheck className="h-4 w-4" />
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {tier.cta === "Contact Us" ? (
+          <Button
+            variant={isHighlighted ? "secondary" : "default"}
+            className="w-full"
+            onClick={() => setIsContactModalOpen(true)}
+          >
+            {tier.cta}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         ) : (
-          <h1 className="text-4xl font-medium">{price}</h1>
+          <Link href="/payment">
+            <Button variant={isHighlighted ? "secondary" : "default"} className="w-full">
+              {tier.cta}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         )}
-      </div>
-
-      <div className="flex-1 space-y-2">
-        <h3 className="text-sm font-medium">{tier.description}</h3>
-        <ul className="space-y-2">
-          {tier.features.map((feature, index) => (
-            <li
-              key={index}
-              className={cn(
-                "flex items-center gap-2 text-sm font-medium",
-                isHighlighted ? "text-background" : "text-muted-foreground",
-              )}
-            >
-              <BadgeCheck className="h-4 w-4" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <Button variant={isHighlighted ? "secondary" : "default"} className="w-full">
-        {tier.cta}
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Button>
-    </Card>
+      </Card>
+      <ContactUsModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
+    </>
   )
 }
 
