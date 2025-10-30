@@ -2,28 +2,19 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { CreditCard, AlertCircle } from "lucide-react"
-import { SuccessToast } from "@/components/ui/success-toast"
-import { ErrorToast } from "@/components/ui/error-toast"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CardPaymentForm } from "@/components/ui/card-payment-form"
+import { PayPalModal } from "@/components/ui/paypal-modal"
+import { MpesaModal } from "@/components/ui/mpesa-modal"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function PaymentPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [paymentSuccess, setPaymentSuccess] = useState<boolean | null>(null)
+  const { toast } = useToast()
+  const [isPayPalModalOpen, setIsPayPalModalOpen] = useState(false)
+  const [isMpesaModalOpen, setIsMpesaModalOpen] = useState(false)
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setIsLoading(true)
-    setPaymentSuccess(null)
-
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Simulate a random success or failure
-    const isSuccess = Math.random() > 0.5
-    setPaymentSuccess(isSuccess)
-    setIsLoading(false)
+  const handlePaymentSuccess = () => {
+    toast({ title: "Payment successful!" })
   }
 
   return (
@@ -31,33 +22,31 @@ export default function PaymentPage() {
       <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-foreground">Payment</h1>
-          <p className="mt-2 text-muted-foreground">Enter your payment details to complete the purchase.</p>
+          <p className="mt-2 text-muted-foreground">Choose your preferred payment method.</p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="card-number">Card Number</Label>
-            <div className="relative">
-              <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input id="card-number" placeholder="0000 0000 0000 0000" className="pl-10" />
+        <Tabs defaultValue="card">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="card">Card</TabsTrigger>
+            <TabsTrigger value="paypal">PayPal</TabsTrigger>
+            <TabsTrigger value="mpesa">M-Pesa</TabsTrigger>
+          </TabsList>
+          <TabsContent value="card">
+            <CardPaymentForm />
+          </TabsContent>
+          <TabsContent value="paypal">
+            <div className="text-center py-8">
+              <Button onClick={() => setIsPayPalModalOpen(true)}>Pay with PayPal</Button>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="expiry-date">Expiry Date</Label>
-              <Input id="expiry-date" placeholder="MM/YY" />
+          </TabsContent>
+          <TabsContent value="mpesa">
+            <div className="text-center py-8">
+              <Button onClick={() => setIsMpesaModalOpen(true)}>Pay with M-Pesa</Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="cvc">CVC</Label>
-              <Input id="cvc" placeholder="CVC" />
-            </div>
-          </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : "Pay Now"}
-          </Button>
-        </form>
+          </TabsContent>
+        </Tabs>
       </div>
-      {paymentSuccess === true && <SuccessToast />}
-      {paymentSuccess === false && <ErrorToast />}
+      <PayPalModal isOpen={isPayPalModalOpen} onClose={() => setIsPayPalModalOpen(false)} onPaymentSuccess={handlePaymentSuccess} />
+      <MpesaModal isOpen={isMpesaModalOpen} onClose={() => setIsMpesaModalOpen(false)} onPaymentSuccess={handlePaymentSuccess} />
     </div>
   )
 }
