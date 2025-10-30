@@ -1,7 +1,8 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Image from "next/image"
 
 const testimonials = [
   {
@@ -10,6 +11,8 @@ const testimonials = [
     company: "TechFlow Inc",
     content: "Castova transformed how we manage leads. The dashboard is intuitive and the analytics are invaluable.",
     initials: "SC",
+    avatarSrc: "/placeholder-user.jpg",
+    companyLogoSrc: "/placeholder-logo.png",
   },
   {
     name: "Marcus Johnson",
@@ -17,6 +20,8 @@ const testimonials = [
     company: "Growth Labs",
     content: "Finally, a lead management tool that doesn't overcomplicate things. Castova gets it right.",
     initials: "MJ",
+    avatarSrc: "/placeholder-user.jpg",
+    companyLogoSrc: "/placeholder-logo.png",
   },
   {
     name: "Elena Rodriguez",
@@ -24,6 +29,8 @@ const testimonials = [
     company: "Digital Ventures",
     content: "The team collaboration features are game-changing. Our entire team loves using Castova.",
     initials: "ER",
+    avatarSrc: "/placeholder-user.jpg",
+    companyLogoSrc: "/placeholder-logo.png",
   },
 ]
 
@@ -43,11 +50,21 @@ export function TestimonialsSection() {
             >
               <div className="flex items-center gap-4 mb-4">
                 <Avatar>
+                  <AvatarImage src={testimonial.avatarSrc} alt={testimonial.name} />
                   <AvatarFallback className="bg-primary text-primary-foreground">{testimonial.initials}</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold text-foreground">{testimonial.name}</p>
-                  <p className="text-sm text-foreground/60">{testimonial.role}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-foreground/60">{testimonial.role}</p>
+                    <Image
+                      src={testimonial.companyLogoSrc}
+                      alt={testimonial.company}
+                      width={20}
+                      height={20}
+                      className="rounded-full"
+                    />
+                  </div>
                 </div>
               </div>
               <p className="text-foreground/70 italic">"{testimonial.content}"</p>

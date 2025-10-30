@@ -2,27 +2,32 @@
 
 import { Card } from "@/components/ui/card"
 import { BarChart3, Users, Zap, Shield } from "lucide-react"
+import Image from "next/image"
 
 const features = [
   {
     icon: BarChart3,
     title: "Real-Time Analytics",
     description: "Track lead sources, conversion funnels, and team performance in real-time dashboards.",
+    imageSrc: "/placeholder-analytics.png",
   },
   {
     icon: Users,
     title: "Team Collaboration",
     description: "Manage team members with role-based access and permission controls.",
+    imageSrc: "/placeholder-team.png",
   },
   {
     icon: Zap,
     title: "Smart Lead Capture",
     description: "Multi-field forms with validation and seamless chatbot integration.",
+    imageSrc: "/placeholder-lead.png",
   },
   {
     icon: Shield,
     title: "Enterprise Security",
     description: "API key management and CRM integrations with HubSpot and Salesforce.",
+    imageSrc: "/placeholder-security.png",
   },
 ]
 
@@ -42,9 +47,33 @@ export function FeaturesSection() {
                 key={index}
                 className="p-8 hover:shadow-lg transition-all duration-300 hover:border-primary/50 bg-card border border-border"
               >
-                <Icon className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">{feature.title}</h3>
-                <p className="text-foreground/60">{feature.description}</p>
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  {index % 2 === 0 && (
+                    <Image
+                      src={feature.imageSrc}
+                      alt={feature.title}
+                      width={400}
+                      height={200}
+                      className="rounded-md object-cover w-full md:w-1/2"
+                    />
+                  )}
+                  <div>
+                    <div className="flex items-center gap-4 mb-4">
+                      <Icon className="w-12 h-12 text-primary" />
+                      <h3 className="text-xl font-semibold text-foreground">{feature.title}</h3>
+                    </div>
+                    <p className="text-foreground/60">{feature.description}</p>
+                  </div>
+                  {index % 2 !== 0 && (
+                    <Image
+                      src={feature.imageSrc}
+                      alt={feature.title}
+                      width={400}
+                      height={200}
+                      className="rounded-md object-cover w-full md:w-1/2"
+                    />
+                  )}
+                </div>
               </Card>
             )
           })}

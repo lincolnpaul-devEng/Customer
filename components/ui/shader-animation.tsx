@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
+import { useTheme } from "next-themes"
 
 export function ShaderAnimation() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -12,6 +13,7 @@ export function ShaderAnimation() {
     uniforms: any
     animationId: number
   } | null>(null)
+  const { theme } = useTheme()
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -33,6 +35,7 @@ export function ShaderAnimation() {
       precision highp float;
       uniform vec2 resolution;
       uniform float time;
+      uniform float isDarkMode;
 
       void main(void) {
         vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
@@ -46,7 +49,11 @@ export function ShaderAnimation() {
           }
         }
         
-        gl_FragColor = vec4(color[0],color[1],color[2],1.0);
+        if (isDarkMode == 1.0) {
+          gl_FragColor = vec4(color, 1.0);
+        } else {
+          gl_FragColor = vec4(color * 0.5, 1.0); // Slightly darker for light mode
+        }
       }
     `
 
@@ -60,6 +67,7 @@ export function ShaderAnimation() {
     const uniforms = {
       time: { type: "f", value: 1.0 },
       resolution: { type: "v2", value: new THREE.Vector2() },
+      isDarkMode: { type: "f", value: 0.0 },
     }
 
     const material = new THREE.ShaderMaterial({
@@ -129,6 +137,12 @@ export function ShaderAnimation() {
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (sceneRef.current) {
+      sceneRef.current.uniforms.isDarkMode.value = theme === "dark" ? 1.0 : 0.0
+    }
+  }, [theme])
 
   return (
     <div
